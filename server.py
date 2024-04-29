@@ -12,9 +12,7 @@ def handle_client(client_socket):
     global kelime, kalan_hak
 
     # Kelimeyi yıldızlarla gösterin
-    gizli_kelime = ""
-    for harf in kelime:
-        gizli_kelime += "*"
+    gizli_kelime = "*" * len(kelime)
 
     while kalan_hak > 0:
         # Gizli kelimeyi ve kalan hakkı gönderin
@@ -32,7 +30,7 @@ def handle_client(client_socket):
                 gizli_kelime = gizli_kelime[:i] + harf + gizli_kelime[i+1:]
 
         # Geri bildirim verin
-        if doğru_harfler == len(kelime):
+        if dogru_harfler == len(kelime):
             mesaj = "Tebrikler! Doğru kelimeyi buldunuz."
             break
         else:

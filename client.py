@@ -21,7 +21,7 @@ while True:
     print(sonuc_mesaji)
 
     # Oyun bittiyse döngüyü sonlandırın
-    if sonuc_mesaji == "Tebrikler! Doğru kelimeyi buldunuz." or kalan_hak == 0:
+    if sonuc_mesaji.startswith("Tebrikler!") or sonuc_mesaji.startswith("Bilemediniz"):
         break
 
 # Bağlantıyı kapatın
