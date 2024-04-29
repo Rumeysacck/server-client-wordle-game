@@ -1,28 +1,20 @@
 import socket
 
-HOST = "127.0.0.1"  # Yerel ana bilgisayar
-PORT = 4337  # Sunucu port numarası
-
-# Soket bağlantısı kurun
+# Sunucuya bağlan
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((HOST, PORT))
+client_socket.connect(('127.0.0.1', 4337))
 
-while True:
-    # Sunucudan mesaj alın
-    mesaj = client_socket.recv(1024).decode()
-    print(mesaj)
+# Tahmin için 5 hakkı tanımla
+hak = 5
 
-    # Tahmini girin
-    tahmin = input("Tahmininiz: ")
+while hak > 0:
+    tahmin = input("Tahmininizi girin: ").upper()
     client_socket.send(tahmin.encode())
-
-    # Sonucu kontrol edin
-    sonuc_mesaji = client_socket.recv(1024).decode()
-    print(sonuc_mesaji)
-
-    # Oyun bittiyse döngüyü sonlandırın
-    if sonuc_mesaji.startswith("Tebrikler!") or sonuc_mesaji.startswith("Bilemediniz"):
+    cevap = client_socket.recv(1024).decode()
+    print("Sunucudan gelen cevap:", cevap)
+    if cevap == "Tebrikler" or cevap == "Bilemediniz":
         break
+    hak -= 1
 
-# Bağlantıyı kapatın
+# Bağlantıyı kapat
 client_socket.close()

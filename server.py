@@ -1,64 +1,49 @@
 import socket
-import threading
 
-HOST = "127.0.0.1"  # Yerel ana bilgisayar
-PORT = 4337  # Sunucu port numarası
-
-# Kelimeyi ve kalan hak sayısını tanımlayın
+# Tahmin edilecek kelime
 kelime = "KALP"
-kalan_hak = 5
 
-def handle_client(client_socket):
-    global kelime, kalan_hak
+# Doğru tahmini kontrol et
+def kontrol(tahmin):
+    if tahmin == kelime:
+        return "Tebrikler"
+    else:
+        return "Bilemediniz"
 
-    # Kelimeyi yıldızlarla gösterin
-    gizli_kelime = "*" * len(kelime)
-
-    while kalan_hak > 0:
-        # Gizli kelimeyi ve kalan hakkı gönderin
-        mesaj = f"{gizli_kelime} ({kalan_hak} hak kaldı)"
-        client_socket.send(mesaj.encode())
-
-        # Tahmini alın
-        tahmin = client_socket.recv(1024).decode()
-
-        # Tahmini kontrol edin
-        dogru_harfler = 0
-        for i, harf in enumerate(kelime):
-            if harf == tahmin[i]:
-                dogru_harfler += 1
-                gizli_kelime = gizli_kelime[:i] + harf + gizli_kelime[i+1:]
-
-        # Geri bildirim verin
-        if dogru_harfler == len(kelime):
-            mesaj = "Tebrikler! Doğru kelimeyi buldunuz."
-            break
-        else:
-            yeni_gizli_kelime = ""
-            for i, harf in enumerate(gizli_kelime):
-                if harf == "*":
-                    yeni_gizli_kelime += "*"
-                elif harf in tahmin:
-                    yeni_gizli_kelime += harf
-                else:
-                    yeni_gizli_kelime += harf.lower()
-            gizli_kelime = yeni_gizli_kelime
-            kalan_hak -= 1
-
-    # Sonucu gönderin
-    client_socket.send(mesaj.encode())
-    client_socket.close()
-
-# Sunucuyu başlatın
+# Sunucu soketini oluştur
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind((HOST, PORT))
-server_socket.listen(5)
+server_socket.bind(('127.0.0.1', 4337))
+server_socket.listen(1)
 
-while True:
-    # Yeni bir bağlantı kabul edin
-    client_socket, address = server_socket.accept()
-    print(f"Bağlantı kuruldu: {address}")
+print("Sunucu başlatıldı. İstemci bekleniyor...")
 
-    # Her istemci için ayrı bir iş parçacığı oluşturun
-    client_thread = threading.Thread(target=handle_client, args=(client_socket,))
-    client_thread.start()
+# Bağlantıyı kabul et
+client_socket, client_address = server_socket.accept()
+print("İstemci bağlandı:", client_address)
+
+# Tahmin için 5 hakkı tanımla
+hak = 5
+
+while hak > 0:
+    tahmin = client_socket.recv(1024).decode()
+    print("İstemcinin tahmini:", tahmin)
+    cevap = ""
+    for i in range(len(kelime)):
+        if tahmin[i] == kelime[i]:
+            cevap += tahmin[i]
+        elif tahmin[i] in kelime:
+            cevap += tahmin[i].lower()
+        else:
+            cevap += "*"
+    if cevap == kelime:
+        client_socket.send("Tebrikler".encode())
+        break
+    else:
+        client_socket.send(cevap.encode())
+        hak -= 1
+        if hak == 0:
+            client_socket.send("Bilemediniz".encode())
+
+# Bağlantıyı kapat
+client_socket.close()
+server_socket.close()
