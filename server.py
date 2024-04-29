@@ -1,7 +1,7 @@
 import socket
 
 # Tahmin edilecek kelime
-kelime = "KALP"
+kelime = "KABE"
 
 # Doğru tahmini kontrol et
 def kontrol(tahmin):
@@ -42,7 +42,7 @@ while hak > 0:
         client_socket.send(cevap.encode())
         hak -= 1
         if hak == 0:
-            client_socket.send("Bilemediniz".encode())
+            client_socket.send("  Bilemediniz".encode())
 
 # Bağlantıyı kapat
 client_socket.close()
