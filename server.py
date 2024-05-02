@@ -1,8 +1,15 @@
 import socket
+import random
 
-# Tahmin edilecek kelime
-kelime = "KALP"
-gizli_kelime = kelime[0] + '*' * (len(kelime) - 1)
+# Tahmin edilecek kelimeler
+kelimeler = ["fren", "cips", "priz", "bluz", "roka", "üzüm", "dize", "sert", "adil", "tarz"]
+
+# Doğru tahmini kontrol et
+def kontrol(tahmin):
+    if tahmin == kelime:
+        print("Tebrikler")
+    else:
+        print("Bilemediniz")
 
 # Sunucu soketini oluştur
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -15,31 +22,40 @@ print("Sunucu başlatıldı. İstemci bekleniyor...")
 client_socket, client_address = server_socket.accept()
 print("İstemci bağlandı:", client_address)
 
-# İlk harfi gönder
-client_socket.send(gizli_kelime.encode())
+# Rastgele kelime seç
+kelime = random.choice(kelimeler)
+kelime = kelime.upper()
+print("Doğru kelime:", kelime)
+
+# Sadece ilk harfi gönder (büyük harfle)
+ilk_harf_goster = kelime[0].upper() + "*" * (len(kelime) - 1)
+client_socket.send(ilk_harf_goster.encode())
 
 # Tahmin için 5 hakkı tanımla
 hak = 5
 
 while hak > 0:
-    tahmin = client_socket.recv(1024).decode()
+    tahmin = client_socket.recv(1024).decode().lower()
+    tahmin = tahmin.upper()
     print("İstemcinin tahmini:", tahmin)
     cevap = ""
     for i in range(len(kelime)):
         if tahmin[i] == kelime[i]:
-            cevap += tahmin[i]
+            cevap += tahmin[i].upper()
         elif tahmin[i] in kelime:
             cevap += tahmin[i].lower()
         else:
             cevap += "*"
-    if cevap == kelime:
-        client_socket.send("Tebrikler".encode())
+    if hak==1 and cevap.upper()!=kelime.upper():
+        client_socket.send(f"Bilemediniz, Kelime buydu :{kelime} \nBitti".encode())
+        break
+    
+    if cevap.upper() == kelime.upper():
+        client_socket.send(f"Tebrikler, Kelime buydu :{kelime}".encode())
         break
     else:
         client_socket.send(cevap.encode())
         hak -= 1
-        if hak == 0:
-            client_socket.send(" Bilemediniz".encode())
 
 # Bağlantıyı kapat
 client_socket.close()
