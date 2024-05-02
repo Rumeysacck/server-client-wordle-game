@@ -18,7 +18,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
         if "Tebrikler" in data or "Bitti" in data:
             break
 
-        guess = input("Tahmin: ")
+        guess = input("Tahmini giriniz: ")
         client_socket.sendall(guess.encode())
         # bunu yazdıktan sonra sunucudan cevap bekleyeceğiz doğal olarak
 

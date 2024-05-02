@@ -47,11 +47,11 @@ while hak > 0:
         else:
             cevap += "*"
     if hak==1 and cevap.upper()!=kelime.upper():
-        client_socket.send(f"Bilemediniz, Kelime buydu :{kelime} \nBitti".encode())
+        client_socket.send(f"Bilemediniz maalesef, Tahmin edilmesi gereken kelime: {kelime} \nBitti".encode())
         break
     
     if cevap.upper() == kelime.upper():
-        client_socket.send(f"Tebrikler, Kelime buydu :{kelime}".encode())
+        client_socket.send(f"Tebrikler, oyunu kazandınız!!".encode())
         break
     else:
         client_socket.send(cevap.encode())
