@@ -1,14 +1,8 @@
 import socket
 
 # Tahmin edilecek kelime
-kelime = "KABE"
-
-# Doğru tahmini kontrol et
-def kontrol(tahmin):
-    if tahmin == kelime:
-        return "Tebrikler"
-    else:
-        return "Bilemediniz"
+kelime = "KALP"
+gizli_kelime = kelime[0] + '*' * (len(kelime) - 1)
 
 # Sunucu soketini oluştur
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,6 +14,9 @@ print("Sunucu başlatıldı. İstemci bekleniyor...")
 # Bağlantıyı kabul et
 client_socket, client_address = server_socket.accept()
 print("İstemci bağlandı:", client_address)
+
+# İlk harfi gönder
+client_socket.send(gizli_kelime.encode())
 
 # Tahmin için 5 hakkı tanımla
 hak = 5
@@ -42,7 +39,7 @@ while hak > 0:
         client_socket.send(cevap.encode())
         hak -= 1
         if hak == 0:
-            client_socket.send("  Bilemediniz".encode())
+            client_socket.send(" Bilemediniz".encode())
 
 # Bağlantıyı kapat
 client_socket.close()
