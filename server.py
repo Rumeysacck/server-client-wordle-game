@@ -38,6 +38,11 @@ while hak > 0:
     tahmin = client_socket.recv(1024).decode().lower()
     tahmin = tahmin.upper()
     print("İstemcinin tahmini:", tahmin)
+    
+    if len(tahmin) != len(kelime):
+        client_socket.send("Lütfen 4 harfli bir kelime giriniz.".encode())
+        continue
+    
     cevap = ""
     for i in range(len(kelime)):
         if tahmin[i] == kelime[i]:
